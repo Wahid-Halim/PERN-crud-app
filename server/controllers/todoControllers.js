@@ -23,7 +23,19 @@ const getAllTodo = async (req, res) => {
   }
 };
 
+const getTodo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const todo = await pool.query("SELECT * FROM todo WHERE id = $1", [id]);
+    res.status(200).json(todo.rows);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 module.exports = {
   createTodo,
   getAllTodo,
+  getTodo,
 };
