@@ -34,8 +34,35 @@ const getTodo = async (req, res) => {
   }
 };
 
+const updateTodo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { description } = req.body;
+
+    const updateTodo = await pool.query(
+      "UPDATE todo SET description = $1 WHERE id = $2 RETURNING *",
+      [description, id]
+    );
+    res.json(updateTodo.rows);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteTodo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleteTodo = await pool.query("DELETE FROM todo WHERE id = $1", [id]);
+    res.json(deleteTodo.rows);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   createTodo,
   getAllTodo,
   getTodo,
+  updateTodo,
+  deleteTodo,
 };
