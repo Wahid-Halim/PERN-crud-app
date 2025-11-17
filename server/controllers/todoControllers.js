@@ -7,7 +7,6 @@ const createTodo = async (req, res) => {
       "INSERT INTO todo (description) VALUES($1) RETURNING *",
       [description]
     );
-
     res.status(200).json(newTodo.rows[0]);
   } catch (error) {
     console.log(error);
@@ -53,7 +52,7 @@ const deleteTodo = async (req, res) => {
   try {
     const { id } = req.params;
     const deleteTodo = await pool.query("DELETE FROM todo WHERE id = $1", [id]);
-    res.json(deleteTodo.rows);
+    res.status(200).json("Delete successfully!");
   } catch (error) {
     console.log(error);
   }

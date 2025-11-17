@@ -1,7 +1,12 @@
-import useTodos from "../hooks/useTodos";
+import EditModal from "./EditModal";
+import TodoForm from "./TodoForm";
 
-const TodoTable = () => {
-  const { data } = useTodos();
+const TodoTable = ({ data, loading, handleDelete }) => {
+  const handleEdit = () => {
+    document.getElementById("my_modal_5").showModal();
+  };
+  if (loading)
+    return <span className="loading loading-spinner text-primary"></span>;
 
   console.log(data);
   return (
@@ -23,16 +28,27 @@ const TodoTable = () => {
                 <th>{todo.id}</th>
                 <td>{todo.description}</td>
                 <td>
-                  <button className="btn btn-soft btn-error">Delete</button>
+                  <button
+                    className="btn btn-soft btn-error"
+                    onClick={() => handleDelete(todo.id)}
+                  >
+                    Delete
+                  </button>
                 </td>
                 <td>
-                  <button className="btn btn-soft btn-warning">Warning</button>
+                  <label
+                    htmlFor="my_modal_7"
+                    className="btn btn-soft btn-warning"
+                  >
+                    Update
+                  </label>
                 </td>
               </tr>
             );
           })}
         </tbody>
       </table>
+      <EditModal />
     </div>
   );
 };

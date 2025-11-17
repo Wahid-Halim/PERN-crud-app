@@ -1,8 +1,4 @@
-import useTodos from "../hooks/useTodos";
-
-const TodoForm = () => {
-  const { handleSubmit, setDescription, description } = useTodos();
-
+const TodoForm = ({ handleSubmit, setDescription, description }) => {
   return (
     <form className="" onSubmit={handleSubmit}>
       <div className="flex space-x-3">
