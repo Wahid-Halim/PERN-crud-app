@@ -3,19 +3,21 @@ import { useEffect, useState } from "react";
 const useTodos = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+
   const [description, setDescription] = useState("");
   const [newDes, setNewDes] = useState("");
 
-  // Fetch all todos (runs ONCE)
+  const [selectedTodoId, setSelectedTodoId] = useState(null);
+
+  // Fetch todos
   const fetchTodos = async () => {
     setLoading(true);
     try {
       const res = await fetch("http://localhost:3000/api/v1/todos");
-      if (!res.ok) throw new Error("Failed to fetch todos");
       const json = await res.json();
       setData(json);
-    } catch (error) {
-      console.log(error.message);
+    } catch (err) {
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -25,7 +27,7 @@ const useTodos = () => {
     fetchTodos();
   }, []);
 
-  // Add new todo
+  // Add todo
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!description.trim()) return;
@@ -37,41 +39,51 @@ const useTodos = () => {
         body: JSON.stringify({ description }),
       });
 
-      if (!res.ok) throw new Error("Failed to add new Todo");
-
       const json = await res.json();
-
-      // Add new todo immediately to UI
       setData((prev) => [...prev, json]);
-
       setDescription("");
-    } catch (error) {
-      console.log(error.message);
+    } catch (err) {
+      console.log(err);
     }
   };
 
-  // handle Delete todo
+  // Delete todo
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/v1/todos/${id}`, {
+      await fetch(`http://localhost:3000/api/v1/todos/${id}`, {
         method: "DELETE",
       });
-      setData((prev) => prev.filter((todo) => todo.id !== id));
-      if (!res.ok) throw new Error("Could not delete the todo");
-    } catch (error) {
-      console.log(error);
+
+      setData((prev) => prev.filter((t) => t.id !== id));
+    } catch (err) {
+      console.log(err);
     }
   };
 
-  const handleUpdate = async (id) => {
+  // Update todo
+  const handleUpdate = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/api/v1/todos/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: newDes }),
-      });
-    } catch (error) {
-      console.log(error);
+      const res = await fetch(
+        `http://localhost:3000/api/v1/todos/${selectedTodoId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ description: newDes }),
+        }
+      );
+
+      const updated = await res.json();
+
+      setData((prev) =>
+        prev.map((todo) => (todo.id === selectedTodoId ? updated : todo))
+      );
+
+      setNewDes("");
+      setSelectedTodoId(null);
+
+      document.getElementById("my_modal_7").checked = false; // close modal
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -84,6 +96,8 @@ const useTodos = () => {
     handleDelete,
     newDes,
     setNewDes,
+    selectedTodoId,
+    setSelectedTodoId,
     handleUpdate,
   };
 };

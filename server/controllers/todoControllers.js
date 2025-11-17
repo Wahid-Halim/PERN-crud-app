@@ -42,7 +42,7 @@ const updateTodo = async (req, res) => {
       "UPDATE todo SET description = $1 WHERE id = $2 RETURNING *",
       [description, id]
     );
-    res.json(updateTodo.rows);
+    res.json(updateTodo.rows[0]);
   } catch (error) {
     console.log(error);
   }
